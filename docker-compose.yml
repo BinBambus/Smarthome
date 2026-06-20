@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Deine Smarthome-API
+  api:
+    build: .
+    ports:
+      - "${HOST_IP}:5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=smarthome_db
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # Die SQL-Datenbank
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=smarthome_db
+    expose:
+      - "5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
