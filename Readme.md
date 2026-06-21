@@ -28,3 +28,27 @@ Ein leichtgewichtiges Smarthome-Backend, das dein günstiges LED-Licht in einen 
 ```bash
    git clone [https://github.com/dein-benutzername/smartlight-wakeup.git](https://github.com/dein-benutzername/smartlight-wakeup.git)
    cd smartlight-wakeup
+
+
+DB
+weeklyscheduler
+ - uuid
+ - is_active
+ - monday
+ - tuesday
+ - wednesday
+ - thursday
+ - friday
+ - saturday
+ - sunday
+ - color
+ - timespan
+
+onetime
+ - uuid
+ - is_active
+ - datetime
+ - color
+ - timespan
+
+add_ontime
