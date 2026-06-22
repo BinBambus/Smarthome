@@ -17,26 +17,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.post("/api/alarm/instance")
-async def add_alarm(alarm_instance: schemas.AlarmInstance, db: Session = Depends(get_db)):
-    # 
-    db_service.create_alarm_instance(db, alarm_instance)
-
-    return {
-        "message": "Alarm instance created successfully"
-    }
-
+async def create_alarm_instance(alarm_instance: schemas.AlarmInstance, db: Session = Depends(get_db)):
+    return db_service.create_alarm_instance(db, alarm_instance)
 
 @app.post("/api/alarm/schedule")
-async def add_weekly_alarm(
-    alarm_schedule: schemas.AlarmSchedule,
-    db: Session = Depends(get_db)
-):  
-    # Authentifizierung
-    db_service.create_alarm_schedule(db, alarm_schedule)
-
-    return {
-        "message": "Alarm schedule created successfully"
-    }
+async def create_alarm_schedule(alarm_schedule: schemas.AlarmSchedule, db: Session = Depends(get_db)):  
+    return db_service.create_alarm_schedule(db, alarm_schedule)
 
 @app.get("/api/alarm/instances", response_model=List[schemas.AlarmInstance])
 async def get_alarm_instances(db: Session = Depends(get_db)):
@@ -47,15 +33,17 @@ async def get_alarm_schedules(db: Session = Depends(get_db)):
     return db_service.get_alarm_schedules(db)
 
 @app.put("/api/alarm/schedule")
-async def update_alarm_schedule(
-    alarm_schedule: schemas.AlarmSchedule,
-    db: Session = Depends(get_db)
-):  
+async def update_alarm_schedule(alarm_schedule: schemas.AlarmSchedule, db: Session = Depends(get_db)):  
     return db_service.update_alarm_schedule(db, alarm_schedule)
 
 @app.put("/api/alarm/instance")
-async def update_alarm_instance(
-    alarm_instance: schemas.AlarmInstance,
-    db: Session = Depends(get_db)
-):  
+async def update_alarm_instance(alarm_instance: schemas.AlarmInstance, db: Session = Depends(get_db)):  
     return db_service.update_alarm_instance(db, alarm_instance)
+
+@app.delete("/api/alarm/schedule")
+async def delete_alarm_schedule(alarm_schedule: schemas.AlarmSchedule, db: Session = Depends(get_db)):  
+    return db_service.delete_alarm_schedule(db, alarm_schedule)
+
+@app.delete("/api/alarm/instance")
+async def delete_alarm_instance(alarm_instance: schemas.AlarmInstance, db: Session = Depends(get_db)):  
+    return db_service.delete_alarm_instance(db, alarm_instance)

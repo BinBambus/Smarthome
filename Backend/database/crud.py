@@ -82,12 +82,13 @@ def check_alarm_schedule_conflict(db: Session, alarm_schedule: schemas.AlarmSche
 #                               GET
 # ------------------------------------------------------------------------
 def get_alarm_instances(db: Session): 
-    entries = db.query(models.AlarmInstance).all()
-    return entries
+   return db.query(models.AlarmInstance).order_by(
+        models.AlarmInstance.date.asc(),
+        models.AlarmInstance.time.asc()
+    ).all()
 
-def get_alarm_schedules(db: Session): 
-    entries = db.query(models.AlarmSchedule).all()
-    return entries
+def get_alarm_schedules(db: Session):
+    return db.query(models.AlarmSchedule).order_by(models.AlarmSchedule.id.asc()).all()
 
 # ------------------------------------------------------------------------
 #                            UPDATE
@@ -169,3 +170,26 @@ def update_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
     db.commit()
     db.refresh(db_schedule)
     return db_schedule
+
+# ------------------------------------------------------------------------
+#                              DELETE
+# ------------------------------------------------------------------------
+def delete_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance): 
+    db_instance = db.query(models.AlarmInstance).filter(models.AlarmInstance.id == alarm_instance.id).first()
+    
+    if not db_instance:
+        return None
+
+    db.delete(db_instance)
+    db.commit()
+    return True
+
+def delete_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule): 
+    db_schedule = db.query(models.AlarmSchedule).filter(models.AlarmSchedule.id == alarm_schedule.id).first()
+    
+    if not db_schedule:
+        return None
+
+    db.delete(db_schedule)
+    db.commit()    
+    return True

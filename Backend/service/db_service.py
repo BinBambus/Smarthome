@@ -122,3 +122,44 @@ def update_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Failed to update alarm instance"
         )
+
+
+"""         /api/alarm/schedule           """
+def delete_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
+    """
+    Delete an alarm schedule.
+    """
+    # 1. Delete
+    try:
+        db_schedule = crud.delete_alarm_schedule(db, alarm_schedule)
+        if db_schedule is None:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Conflict detected"
+        )
+        return db_schedule
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to update alarm schedule"
+        )
+
+"""         /api/alarm/instance           """
+def delete_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
+    """
+    Delete an alarm instance.
+    """
+    # 1. Delete 
+    try:
+        db_instance = crud.delete_alarm_instance(db, alarm_instance)
+        if db_instance is None:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Conflict detected"
+        )
+        return db_instance
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to update alarm instance"
+        )
