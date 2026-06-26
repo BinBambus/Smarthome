@@ -8,11 +8,8 @@ export default function Layout() {
     <SidebarProvider>
       <Toaster />
       <AppSidebar />
-      {/* flex-1 sorgt dafür, dass der Inhalt den Rest des Bildschirms ausfüllt */}
       <main className="flex-1 p-6"> 
-        <SidebarTrigger />
-        
-        {/* Hier injiziert React Router gleich deine Seiten (App, Settings, etc.) */}
+        <SidebarTrigger />        
         <Outlet /> 
       </main>
     </SidebarProvider>

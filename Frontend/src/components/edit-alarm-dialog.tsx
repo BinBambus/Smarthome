@@ -22,28 +22,25 @@ import type AlarmSchedule from "@/interfaces/AlarmSchedule"
 
 
 interface EditAlarmDialogProps {
-    alarm: any // Nimmt entweder AlarmInstance oder AlarmSchedule
+    alarm: any
     type: "instance" | "schedule"
-    onRefresh: () => void // Aktualisiert die Liste in Alarms.tsx nach dem Speichern
-    children: React.ReactNode // Das Element auf der Karte, das den Klick abfängt
+    onRefresh: () => void
+    children: React.ReactNode
 }
 
 export function EditAlarmDialog({ alarm, type, onRefresh, children }: EditAlarmDialogProps) {
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [open, setOpen] = useState(false) // Kalender-Popover
+    const [open, setOpen] = useState(false)
     const [submitting, setSubmitting] = useState(false)
 
-    // 🌟 States mit den BESTEHENDEN Werten des Weckers initialisieren
     const [color, setColor] = useState<string>(alarm.led_color)
     const [timespan, setTimespan] = useState<number>(alarm.duration_minutes)
-    const [time, setTime] = useState<string>(alarm.time.slice(0, 5)) // "20:30:00" -> "20:30"
+    const [time, setTime] = useState<string>(alarm.time.slice(0, 5)) 
     
-    // Datum umwandeln falls es eine Instanz ist
     const [date, setDate] = useState<Date | undefined>(
         type === "instance" ? new Date(alarm.date) : undefined
     )
 
-    // Wochentage umwandeln falls es ein Schedule ist
     const [days, setDays] = useState({
         monday: type === "schedule" ? !!alarm.monday : false,
         tuesday: type === "schedule" ? !!alarm.tuesday : false,
@@ -66,7 +63,7 @@ export function EditAlarmDialog({ alarm, type, onRefresh, children }: EditAlarmD
         try {
             if (type === "schedule") {
                 const updatedSchedule: AlarmSchedule = {
-                    ...alarm, // Behält ID und is_active Status bei
+                    ...alarm,
                     time,
                     led_color: color,
                     duration_minutes: timespan,
@@ -77,7 +74,7 @@ export function EditAlarmDialog({ alarm, type, onRefresh, children }: EditAlarmD
             } else {
                 const targetDate = date || new Date()
                 const updatedInstance: AlarmInstance = {
-                    ...alarm, // Behält ID, schedule_id und is_active Status bei
+                    ...alarm,
                     time,
                     led_color: color,
                     duration_minutes: timespan,
@@ -86,7 +83,7 @@ export function EditAlarmDialog({ alarm, type, onRefresh, children }: EditAlarmD
                 await updateAlarmInstance(updatedInstance)
                 toast.success("Alarm instance updated successfully")
             }
-            onRefresh() // Liste im Hauptfenster neu laden
+            onRefresh()
             setDialogOpen(false)
         } catch (error) {
             toast.error("Error updating alarm", {
@@ -101,7 +98,6 @@ export function EditAlarmDialog({ alarm, type, onRefresh, children }: EditAlarmD
 
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            {/* children ist der klickbare Bereich auf deiner Karte */}
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>

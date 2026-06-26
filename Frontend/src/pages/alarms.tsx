@@ -31,7 +31,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 export function Alarms() {
-    const [isLoading, setLoading] = useState<boolean>(true) // Startfarbe Rot
+    const [isLoading, setLoading] = useState<boolean>(true)
     const [isUpdatingAlarmInstance, setUpdatingAlarmInstance] = useState<boolean>(false)
     const [isUpdatingAlarmSchedule, setUpdatingAlarmSchedule] = useState<boolean>(false)
     const [alarmInstances, setAlarmInstances] = useState<AlarmInstance[]>([])
@@ -45,6 +45,21 @@ export function Alarms() {
 
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return
+        let currentItemToDelete: any
+        // Optimistic UI update
+        if (itemToDelete.type === "schedule"){
+            currentItemToDelete = alarmSchedules.find(item => item.id === itemToDelete.id )
+            setAlarmSchedules(prev => 
+                prev.filter(item => item.id !== itemToDelete.id)
+            )
+        } else{
+            currentItemToDelete = alarmInstances.find(item => item.id === itemToDelete.id )
+            setAlarmInstances(prev => 
+                prev.filter(item => item.id !== itemToDelete.id)
+            )
+        }
+
+
         try {
             if (itemToDelete.type === "schedule") {
                 const dummySchedule: AlarmSchedule = {
@@ -77,6 +92,11 @@ export function Alarms() {
             retrieveAlarms()
         } catch (error) {
             toast.error("Failed to delete alarm")
+            if (itemToDelete.type === "schedule") {
+                setAlarmSchedules([...alarmSchedules, currentItemToDelete]);
+            } else {
+                setAlarmInstances([...alarmInstances, currentItemToDelete]);
+            }
         } finally {
             setDeleteDialogOpen(false)
             setItemToDelete(null)
@@ -114,7 +134,6 @@ export function Alarms() {
         if (!currentSchedule) return
         const updatedSchedule = { ...currentSchedule, is_active: nextStatus }
         
-        // UI sofort aktualisieren (Optimistic Update)
         setAlarmSchedules(prev => 
             prev.map(item => item.id === id ? updatedSchedule : item)
         )
@@ -123,7 +142,6 @@ export function Alarms() {
             await updateAlarmSchedule(updatedSchedule)
             toast.success("Schedule status updated")
         } catch (error) {
-            // Fallback: Wenn API fehlschlägt, Zustand wieder zurückrollen
             setAlarmSchedules(prev => 
                 prev.map(item => item.id === id ? { ...item, is_active: currentStatus } : item)
             )
@@ -142,7 +160,6 @@ export function Alarms() {
         if (!currentInstance) return
         const updatedInstance = { ...currentInstance, is_active: nextStatus }
 
-        // UI sofort aktualisieren (Optimistic Update)
         setAlarmInstances(prev => 
             prev.map(item => item.id === id ? updatedInstance : item)
         )
@@ -151,7 +168,6 @@ export function Alarms() {
             await updateAlarmInstance(updatedInstance)
             toast.success("Alarm status updated")
         } catch (error) {
-            // Fallback bei Fehler
             setAlarmInstances(prev => 
                 prev.map(item => item.id === id ? { ...item, is_active: currentStatus } : item)
             )
@@ -199,7 +215,7 @@ export function Alarms() {
                     </p>
                 </div>
 
-                <AddAlarmDialog />
+                <AddAlarmDialog onRefresh={retrieveAlarms} />
 
                 {isLoading && (
                     <>
@@ -220,7 +236,6 @@ export function Alarms() {
                                         <Card className="mt-2" key={schedule.id || schedule.time}>
                                             <CardHeader className="flex flex-row items-center justify-between">
                                                 
-                                                {/* 🌟 HIER REIN: Text-Bereich ist jetzt der Trigger für den Zeitplan-Edit-Modus */}
                                                 <EditAlarmDialog alarm={schedule} type="schedule" onRefresh={retrieveAlarms}>
                                                     <div className="flex-1 cursor-pointer hover:opacity-80 transition-opacity">
                                                         <Label className="text-base font-semibold leading-none cursor-pointer">
@@ -245,7 +260,7 @@ export function Alarms() {
                                             className="text-destructive focus:text-destructive cursor-pointer"
                                             onClick={() => triggerDeleteTrigger(schedule.id, "schedule")}
                                         >
-                                            Löschen
+                                            Delete
                                         </ContextMenuItem>
                                     </ContextMenuContent>
                                 </ContextMenu>
@@ -262,7 +277,6 @@ export function Alarms() {
                                         <Card className="mt-2" key={instance.id || instance.time}>
                                             <CardHeader className="flex flex-row items-center justify-between">
                                                 
-                                                {/* 🌟 HIER REIN: Text-Bereich ist der Trigger für den Instanz-Edit-Modus */}
                                                 <EditAlarmDialog alarm={instance} type="instance" onRefresh={retrieveAlarms}>
                                                     <div className="flex-1 cursor-pointer hover:opacity-80 transition-opacity">
                                                         <Label className="text-base font-semibold leading-none cursor-pointer">
@@ -287,7 +301,7 @@ export function Alarms() {
                                             className="text-destructive focus:text-destructive cursor-pointer"
                                             onClick={() => triggerDeleteTrigger(instance.id, "instance")}
                                         >
-                                            Löschen
+                                            Delete
                                         </ContextMenuItem>
                                     </ContextMenuContent>
                                 </ContextMenu>
@@ -301,15 +315,15 @@ export function Alarms() {
                     <DialogHeader>
                         <DialogTitle className="text-destructive">Alarm löschen?</DialogTitle>
                         <DialogDescription>
-                            Möchtest du diesen Wecker wirklich dauerhaft aus deinem Smarthome entfernen?
+                            Do you want to really remove the alarm?
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="flex flex-row gap-2 mt-4 justify-end">
                         <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                            Abbrechen
+                            Cancel
                         </Button>
                         <Button variant="destructive" onClick={handleDeleteConfirm}>
-                            Ja, löschen
+                            Yes, delete
                         </Button>
                     </DialogFooter>
                 </DialogContent>

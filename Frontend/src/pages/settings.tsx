@@ -12,10 +12,8 @@ export function Settings() {
     const { theme, setTheme } = useTheme()
 
     return (
-        // mx-auto zentriert den gesamten Block horizontal auf der Seite
         <div className="max-w-2xl mx-auto w-full flex flex-col gap-6 mt-6">
             
-            {/* Überschrift mit einer feinen Trennlinie */}
             <div className="border-b pb-4">
                 <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -23,7 +21,6 @@ export function Settings() {
                 </p>
             </div>
 
-            {/* Einstellungs-Box (flex & justify-between schiebt Text nach links, Select nach rechts) */}
             <div className="flex flex-row items-center justify-between p-4 rounded-xl border bg-card shadow-sm">
                 <div className="flex flex-col gap-0.5">
                     <label className="text-base font-semibold leading-none">Theme</label>

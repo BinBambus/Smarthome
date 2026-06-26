@@ -28,7 +28,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
 
-              {/* Eintrag 1: LED Control */}
+              {/* Entry 1: LED Control */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a href="/" className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Eintrag 2: Wecker */}
+              {/* Entry 2: Alarms */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a href="/alarms" className="flex items-center gap-2">
@@ -53,7 +53,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer-Bereich (z.B. für Einstellungen) */}
+      {/* Footer */}
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>

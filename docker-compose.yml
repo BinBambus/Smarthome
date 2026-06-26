@@ -1,29 +1,52 @@
 services:
-  # Deine Smarthome-API
-  api:
-    build: .
-    ports:
-      - "${HOST_IP}:5000:5000"
-    environment:
-      - DB_HOST=db
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=smarthome_db
-    depends_on:
-      - db
-    restart: unless-stopped
-
-  # Die SQL-Datenbank
+  # SQL-Database
   db:
     image: postgres:15-alpine
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=smarthome_db
-    expose:
-      - "5432"
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Smarthome-API
+  api:
+    build: 
+      context: .
+      dockerfile: Backend/Dockerfile 
+    network_mode: "host"
+    privileged: true
+    command: uvicorn main:app --host 127.0.0.1 --port 5000
+    environment:
+      - DB_HOST=127.0.0.1
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=smarthome_db
+    volumes:
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+      - ./Backend:/app
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  # Frontend (Vite-Build + Nginx as Reverse Proxy)
+  frontend:
+    build:
+      context: .
+      dockerfile: Frontend/Dockerfile
+    network_mode: "host"
+    env_file:
+      - .env
+    volumes:
+      - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      - caddy_data:/data
+    restart: unless-stopped
+    depends_on:
+      - api
 
 volumes:
   db_data:
+  caddy_data:
