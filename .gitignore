@@ -1,4 +1,4 @@
-/.env.dev
-/.venv
-/alarm.py
-/.env
+*venv
+*.env
+*__pycache__
+*test_led.py

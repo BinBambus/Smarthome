@@ -39,6 +39,34 @@ def create_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
     db.refresh(db_alarm_instance)
     return db_alarm_instance
 
+def updateOrInsert_led_status(db: Session, led_status: schemas.LedStatus):
+    db_led_status = db.query(models.LedStatus).filter(models.LedStatus.id == 1).first()
+
+    # Insert:
+    if not db_led_status:
+        db_led_status_insert = models.LedStatus(
+            id=1,
+            hex_code=led_status.hex_code,
+            led_color=led_status.led_color,
+            is_on=led_status.is_on,
+            brightness=led_status.brightness
+        )
+        db.add(db_led_status_insert)
+        db.commit()
+        db.refresh(db_led_status_insert)
+        return db_led_status_insert
+    
+    # Update:
+    else:
+        db_led_status.hex_code = led_status.hex_code
+        db_led_status.led_color = led_status.led_color
+        db_led_status.is_on = led_status.is_on
+        db_led_status.brightness = led_status.brightness
+        db.commit()
+        db.refresh(db_led_status)
+        return db_led_status
+
+
 # ------------------------------------------------------------------------
 #                       CHECK CONFLICTS
 # ------------------------------------------------------------------------
@@ -89,6 +117,9 @@ def get_alarm_instances(db: Session):
 
 def get_alarm_schedules(db: Session):
     return db.query(models.AlarmSchedule).order_by(models.AlarmSchedule.id.asc()).all()
+
+def get_led_status(db: Session):
+    return db.query(models.LedStatus).all()
 
 # ------------------------------------------------------------------------
 #                            UPDATE

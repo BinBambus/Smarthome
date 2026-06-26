@@ -19,3 +19,9 @@ class AlarmSchedule(AlarmBase):
     friday: bool
     saturday: bool
     sunday: bool
+
+class LedStatus(BaseModel):
+    hex_code: str
+    is_on: bool
+    led_color: str = Field(max_length=6)
+    brightness: int

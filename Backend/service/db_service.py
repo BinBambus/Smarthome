@@ -10,12 +10,9 @@ from sqlalchemy.orm import Session
 from database import crud
 from models import schemas
 
+
 """         /create_alarm_instance           """
 def create_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
-    """
-    Create a new alarm instance and return it.
-    """
-    # 1. Prüfen, ob conflict existiert
     db_alarm = crud.check_alarm_instance_conflict(db, alarm_instance)
     if db_alarm is True:
         raise HTTPException(
@@ -23,7 +20,6 @@ def create_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
             detail="Alarm instance conflict with existing instance"
         )
 
-    # 2. Alarm instance in DB erstellen
     try:
         return crud.create_alarm_instance(db, alarm_instance)
     except Exception as e:
@@ -34,10 +30,6 @@ def create_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
 
 """         /create_alarm_schedule           """
 def create_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
-    """
-    Create a new alarm schedule and return it.
-    """
-    # 1. Prüfen, ob conflict existiert
     db_schedule = crud.check_alarm_schedule_conflict(db, alarm_schedule)
     if db_schedule is True:
         raise HTTPException(
@@ -45,7 +37,6 @@ def create_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
             detail="Conflict detected"
         )
 
-    # 32 Alarm schedule in DB erstellen
     try:
         return crud.create_alarm_schedule(db, alarm_schedule)
     except Exception as e:
@@ -56,10 +47,6 @@ def create_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
 
 """         /api/alarm/instances           """
 def get_alarm_instances(db: Session):
-    """
-    Retrieve all alarm instances and return it.
-    """
-    # 1. Read all instances
     try:
         return crud.get_alarm_instances(db)
     except Exception as e:
@@ -70,10 +57,6 @@ def get_alarm_instances(db: Session):
 
 """         /api/alarm/schedules        """
 def get_alarm_schedules(db: Session):
-    """
-    Retrieve all alarm schedules and return it.
-    """
-    # 1. Read all instances
     try:
         return crud.get_alarm_schedules(db)
     except Exception as e:
@@ -82,13 +65,34 @@ def get_alarm_schedules(db: Session):
             detail="Failed to retrieve alarm schedules"
         )
 
+"""         /api/led/status        """
+def get_led_status(db: Session):
+    try:
+        return crud.get_led_status(db)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to retrieve led status"
+        )
+
+"""         /api/alarm/schedule           """
+def insert_or_update_led_status(db: Session, led_status: schemas.LedStatus):
+    try:
+        db_schedule = crud.updateOrInsert_led_status(db, led_status)
+        if db_schedule is None:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Conflict detected"
+        )
+        return db_schedule
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to update alarm schedule"
+        )
 
 """         /api/alarm/schedule           """
 def update_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
-    """
-    Update an alarm schedule.
-    """
-    # 1. Updated überprüft selbst
     try:
         db_schedule = crud.update_alarm_schedule(db, alarm_schedule)
         if db_schedule is None:
@@ -105,10 +109,6 @@ def update_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
 
 """         /api/alarm/instance           """
 def update_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
-    """
-    Update an alarm instance.
-    """
-    # 1. Updated überprüft selbst
     try:
         db_instance = crud.update_alarm_instance(db, alarm_instance)
         if db_instance is None:
@@ -126,10 +126,6 @@ def update_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
 
 """         /api/alarm/schedule           """
 def delete_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
-    """
-    Delete an alarm schedule.
-    """
-    # 1. Delete
     try:
         db_schedule = crud.delete_alarm_schedule(db, alarm_schedule)
         if db_schedule is None:
@@ -146,10 +142,6 @@ def delete_alarm_schedule(db: Session, alarm_schedule: schemas.AlarmSchedule):
 
 """         /api/alarm/instance           """
 def delete_alarm_instance(db: Session, alarm_instance: schemas.AlarmInstance):
-    """
-    Delete an alarm instance.
-    """
-    # 1. Delete 
     try:
         db_instance = crud.delete_alarm_instance(db, alarm_instance)
         if db_instance is None:

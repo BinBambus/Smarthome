@@ -25,3 +25,11 @@ class AlarmInstance(Base):
     duration_minutes = Column(Integer, nullable=False, default=10)
     led_color = Column(String(6), nullable=False)
     is_active = Column(Boolean, nullable=False, default=False)
+
+class LedStatus(Base):
+    __tablename__ = "led_status"
+    id = Column(Integer, primary_key=True, index=True)
+    hex_code = Column(String, nullable=False)
+    is_on = Column(Boolean, nullable=False, default=False)
+    led_color = Column(String(6), nullable=False)
+    brightness = Column(Integer, nullable=False, default=0)
